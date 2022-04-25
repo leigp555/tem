@@ -1,83 +1,74 @@
-<template>
-  <el-row class="mb-4">
-    <el-button>Default</el-button>
-    <el-button type="primary">
-      Primary
-    </el-button>
-    <el-button type="success">
-      Success
-    </el-button>
-    <el-button type="info">
-      Info
-    </el-button>
-    <el-button type="warning">
-      Warning
-    </el-button>
-    <el-button type="danger">
-      Danger
-    </el-button>
-    <el-button>中文</el-button>
-  </el-row>
-
-  <el-row class="mb-4">
-    <el-button plain>
-      Plain
-    </el-button>
-    <el-button type="primary" plain>
-      Primary
-    </el-button>
-    <el-button type="success" plain>
-      Success
-    </el-button>
-    <el-button type="info" plain>
-      Info
-    </el-button>
-    <el-button type="warning" plain>
-      Warning
-    </el-button>
-    <el-button type="danger" plain>
-      Danger
-    </el-button>
-  </el-row>
-
-  <el-row class="mb-4">
-    <el-button round>
-      Round
-    </el-button>
-    <el-button type="primary" round>
-      Primary
-    </el-button>
-    <el-button type="success" round>
-      Success
-    </el-button>
-    <el-button type="info" round>
-      Info
-    </el-button>
-    <el-button type="warning" round>
-      Warning
-    </el-button>
-    <el-button type="danger" round>
-      Danger
-    </el-button>
-  </el-row>
-
-  <el-row>
-    <el-button :icon="Search" circle />
-    <el-button type="primary" :icon="Edit" circle />
-    <el-button type="success" :icon="Check" circle />
-    <el-button type="info" :icon="Message" circle />
-    <el-button type="warning" :icon="Star" circle />
-    <el-button type="danger" :icon="Delete" circle />
-  </el-row>
-</template>
-
 <script lang="ts" setup>
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue';
+import axios from 'axios';
+import { computed, watchEffect } from 'vue';
+import { mapState } from 'vuex';
+import Hello from '@/components/HelloWorld.vue';
+// const fn = async () => {
+//   const { data } = await axios.get(import.meta.env.VITE_BASE_API);
+//   console.log(data);
+// };
+// fn();
+// window.alert(import.meta.env.VITE_BASE_API);
+import { useMyStore } from '@/store';
+import moduleA from '@/store/module/moduleA';
+
+const store = useMyStore();
+const storeState = mapState(['count', 'name']);
+const result = {};
+Object.keys(storeState).forEach((key) => {
+  result[key] = computed(storeState[key].bind({ $store: store }));
+});
+const { count, name } = { ...result };
+// getters
+const getNum = computed(() => store.getters.getNum(10));
+computed(() => store.getters.getNum(10));
+computed(() => store.getters.getNum(10));
+console.log(`getNum${getNum.value}`);
+
+watchEffect(() => {
+  console.log(count.value, name.value);
+  console.log(store.getters.getGoods);
+  console.log(store.getters.getX);
+  console.log('=====');
+  console.log(store.state.car.name);
+  console.log(store.state.produce.name);
+});
+console.log(store);
+
+store.dispatch('xxA', 'AAAAAAAAAA');
+store.dispatch('xxB', 'BBBBBBBBB');
+console.log('----');
+const aa = computed(() => store.getters['car/getX']);
+console.log(aa.value);
+console.log(store);
 </script>
+
+<template>
+  <button @click="store.dispatch('addAction',1)">
+    +1
+  </button>
+
+  <div class="test">
+    <ol>
+      <li>
+        <router-link to="/login">
+          登录
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/register">
+          注册
+        </router-link>
+      </li>
+    </ol>
+    <span>xxx</span>
+    <!--    <Hello msg="xxx" />-->
+    <!--    <img src="../src/assets/test.jpg" alt="">-->
+  </div>
+<!--  <router-view />-->
+</template>
+<style lang="scss" scoped>
+.test{
+  color: red;
+}
+</style>
